@@ -1,10 +1,34 @@
 {
-	"api_key": "YOUR API KEY HERE",
+	"api_key": "your youtube API key here",
 	"api_url": "https://www.googleapis.com/youtube/v3",
-	"server_url": "YOUR SERVER URL HERE",
+	"server_url": "your local IP or URL here",
 	"ports": {
 		"app": 3000,
 		"vlc": 8080
 	},
-	"results_per_page": 15
+	"results_per_page": 15,
+	"default_quality": 1,
+	"qualities": [
+		{
+			"id": "240",
+			"pretty_name": "240p",
+			"transcode": "height=240,vcodec=mp1v,acodec=mpga,vb=1024,ab=192",
+			"mime": "video/mpeg",
+			"extra": ",mux=mpeg1"
+		},
+		{
+			"id": "360",
+			"pretty_name": "360p",
+			"transcode": "height=360,vcodec=mp1v,acodec=mpga,vb=2048,ab=192",
+			"mime": "video/mpeg",
+			"extra": ",mux=mpeg1"
+		},
+		{
+			"id": "480",
+			"pretty_name": "480p",
+			"transcode": "height=480,vcodec=mp1v,acodec=mpga,vb=4096,ab=192",
+			"mime": "video/mpeg",
+			"extra": ",mux=mpeg1"
+		}
+	]
 }

@@ -9,25 +9,51 @@ it is rewritten from scratch with a more robust set of routes in order to more
 closely mimic the URL structure of the original Youtube website, making for a
 better replacement in cases of proxying.
 
+## Requirements
+
+### Host
+
+A reasonably modern server with the following:
+
+* Node.js
+* VLC
+* Some form of networking between host and your retro client
+
+To setup the server, run `npm install`, then modify the `config.json.example`
+file to meet your needs and save it as `config.json`. To use this server, you
+must register a Google API application in order to [obtain a Youtube API key][3]
+
+### Client
+
+* Network connection
+* Mozilla-based browser
+* VLC with NPAPI (Mozilla) plugin
+
+This has been so far tested on a Pentium II laptop running Windows 98 using the
+RetroZilla 2.2 browser and VLC version 0.8.6i, but should be able to run on any
+similar combination of hardware and software that meet those requirements.
+
 ## Standalone usage
 
-!TODO
+The server can be run simply by `node server.js`, however in order to keep it
+running more permanently, a monitor such as [nodemon][4] can be used. Once you
+have the server running, simply browse to the URL or IP address in your config
+on your retro machine.
 
 ## WebOne integration
 
 It is possible to use [WebOne][2] to make a proxy rule which will automatically
-redirect your browser from Youtube links to your local Youtube98 server:
+redirect your browser from Youtube links to your local Youtube98 server. Add
+the following lines to your `webone.conf`:
 
-!TODO
+```
+[Edit:^http:\/\/(www.)?youtube.com\/(.*)]
+AddRedirect=http://LOCAL_URL:PORT/$2
+```
 
-## See also
-
-[retro-video-server][1] - 
- The project which inspired Youtube98
-
-[WebOne][2] - 
- A highly configurable HTTP proxy which serves to make modern websites more
- friendly to retro computers
+replacing `LOCAL_URL` and `PORT` with the respective values for your own setup.
 
 [1]: https://github.com/keenmaster486/retro-video-server
 [2]: https://github.com/atauenis/webone
+[3]: https://developers.google.com/youtube/registering_an_application
+[4]: https://nodemon.io/
