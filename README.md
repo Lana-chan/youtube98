@@ -40,6 +40,22 @@ running more permanently, a monitor such as [nodemon][4] can be used. Once you
 have the server running, simply browse to the URL or IP address in your config
 on your retro machine.
 
+You can locally redirect traffic to regular Youtube links in your client by
+adding a line in your client's hosts file to resolve `www.youtube.com` to your
+host, and running an nginx proxy in your host, such as:
+
+```
+server {
+  listen 80;
+	server_name youtube.com www.youtube.com;
+
+	location / {
+		proxy_pass         http://127.0.0.1:3000;
+		proxy_set_header   Host $host:$server_port;
+	}
+}
+```
+
 ## WebOne integration
 
 It is possible to use [WebOne][2] to make a proxy rule which will automatically
@@ -48,7 +64,7 @@ the following lines to your `webone.conf`:
 
 ```
 [Edit:^http:\/\/(www.)?youtube.com\/(.*)]
-AddRedirect=http://LOCAL_URL:PORT/$2
+AddInternalRedirect=http://LOCAL_URL:PORT/$2
 ```
 
 replacing `LOCAL_URL` and `PORT` with the respective values for your own setup.
