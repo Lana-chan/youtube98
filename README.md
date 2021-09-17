@@ -4,7 +4,7 @@ A simple node.js server meant to be run in local networks to provide retro
 computers with the ability to open and search for Youtube links in a reasonably
 modern manner.
 
-This project was inspired by [retro-video-server][1], however instead of a fork
+This project was inspired by Collin Brockway's [retro-video-server][1], however
 it is rewritten from scratch with a more robust set of routes in order to more
 closely mimic the URL structure of the original Youtube website, making for a
 better replacement in cases of proxying.
@@ -46,7 +46,7 @@ host, and running an nginx proxy in your host, such as:
 
 ```
 server {
-  listen 80;
+	listen 80;
 	server_name youtube.com www.youtube.com;
 
 	location / {
