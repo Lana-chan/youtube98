@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%-videoInfo.snippet.title%> - Youtube98</title>
+	<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+	<div class="center">
+		<h1>Youtube98</h1>
+		<form action="/search" method="POST">
+			<label for="searchQuery">Youtube search: </label>
+			<input type="text" name="searchQuery" id="searchQuery"></input>
+			<input type="submit" value="Search"></input>
+		</form>
+	</div>
+
+	<div class="center">
+		<iframe src="http://<%=localURL%>:<%=vlcPort%>" width="854" height="480"></iframe>
+	</div>
+
+	<h3><%-videoInfo.snippet.title%></h3>
+	<p>
+		<%-videoInfo.snippet.description.replace(/\n/g, "<br>")%>
+	</p>
+</body>
+</html>

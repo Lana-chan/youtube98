@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Youtube98</title>
+	<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+	<div class="center">
+		<h1>Youtube98</h1>
+		<form action="/search" method="POST">
+			<label for="searchQuery">Youtube search: </label>
+			<input type="text" name="searchQuery" id="searchQuery" value="<%=searchQuery%>"></input>
+			<input type="submit" value="Search"></input>
+		</form>
+		<p>Quality:
+			<% for (let i = 0; i < qualities.length; i++) { %>
+				<% if (selectedQuality.id == qualities[i].id) { %>
+					<%-qualities[i].pretty_name%>
+				<% } else { %>
+					<a href="/quality?i=<%=i%>"><%-qualities[i].pretty_name%></a>
+				<% } %>
+			<% } %>
+		</p>
+	</div>
+
+	<% if (results != null) { %>
+		<h2>Results for "<%=searchQuery%>":</h2>
+
+		<% for (let i = 0; i < results.items.length; i++) { %>
+			<div class="video-result">
+				<a class="image-float" href="/watch?v=<%=results.items[i].id.videoId%>">
+					<img src="<%=results.items[i].snippet.thumbnails.medium.url%>">
+				</a>
+				<span class="title"><%-results.items[i].snippet.title%></span>
+				(<a href="https://youtube.com/watch?v=<%=results.items[i].id.videoId%>">yt link</a>)
+				<br>
+				<span class="channel"><%-results.items[i].snippet.channelTitle%></span>
+				<p><%-results.items[i].snippet.description%></p>
+			</div>
+			<hr class="clear">
+		<% } %>
+
+	<% } %>
+
+</body>
+</html>

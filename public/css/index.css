@@ -1,0 +1,17 @@
+.center {
+	width: 100%;
+	text-align: center;
+}
+
+.clear {
+	clear: both;
+}
+
+.video-result > .title {
+	font-weight: bold;
+}
+
+.video-result > .image-float {
+	float: left;
+	padding-right: 0.5em;
+}

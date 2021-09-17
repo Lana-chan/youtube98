@@ -1,0 +1,23 @@
+{
+  "name": "youtube98",
+  "version": "1.0.0",
+  "description": "node.js server to re-encode youtube videos in real time for retro computers",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": {
+		"name": "maple 'mavica' syrup",
+		"email": "maple@maple.pet",
+		"url": "https://maple.pet"
+	},
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/Lana-chan/youtube98.git"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+  }
+}

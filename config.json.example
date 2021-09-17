@@ -1,0 +1,10 @@
+{
+	"api_key": "YOUR API KEY HERE",
+	"api_url": "https://www.googleapis.com/youtube/v3",
+	"server_url": "YOUR SERVER URL HERE",
+	"ports": {
+		"app": 3000,
+		"vlc": 8080
+	},
+	"results_per_page": 15
+}
