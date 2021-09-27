@@ -46,9 +46,14 @@ const showResults = (res, searchQuery, results)=>{
 	res.render('index.ejs', {searchQuery: searchQuery, results: results, selectedQuality: selectedQuality, qualities: config.qualities});
 }
 
-const playVideo = (res, videoInfo)=>{
-	spawnVLC(videoInfo.items[0].id, 0);
-	res.render('video.ejs', {videoInfo: videoInfo.items[0], localURL: config.server_url, vlcPort: config.ports.vlc});
+const playVideo = (res, videoInfo, bypass)=>{
+	if (bypass == 1) {
+		iframeUrl = "https://youtube.com/embed/" + videoInfo.items[0].id
+	} else {
+		iframeUrl = "http://" + config.server_url + ":" + config.ports.vlc
+		spawnVLC(videoInfo.items[0].id, 0);
+	}
+	res.render('video.ejs', {videoInfo: videoInfo.items[0], iframeUrl: iframeUrl});
 }
 
 const urlRequest = (url)=>{
@@ -101,7 +106,7 @@ app.get('/watch', (req, res)=>{
 			res.status(500).send(err);
 		} else {
 			console.log(result);
-			playVideo(res, result);
+			playVideo(res, result, req.query.bp);
 		}
 	});
 })
