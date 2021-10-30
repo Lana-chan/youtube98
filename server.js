@@ -18,7 +18,7 @@ const spawnVLC = (video_id, quality)=>{
 	}
 
 	const args = [
-		"-vvv --preferred-resolution 576",
+		"-vvv --preferred-resolution=" + config.preferred_resolution + " --network-caching=" + config.cache_milliseconds + " --sout-livehttp-caching",
 		"https://www.youtube.com/watch?v=" + video_id,
 		"--sout",
 		"'#transcode{" + selectedQuality.transcode + "}:standard{access=http{mime=" + selectedQuality.mime + "},dst=0.0.0.0:" + config.ports.vlc + selectedQuality.extra + "}'"
