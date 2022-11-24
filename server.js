@@ -1,32 +1,39 @@
 const config        = require('./config.json');
 const https         = require('https');
 const { spawn }     = require('child_process');
+const kill          = require('tree-kill');
 const url           = require('url');
 const express       = require('express');
 const { request } = require('http');
 const app = express();
 
-let vlcProcess = null;
+var vlcProcess = null;
 let selectedQuality = config.qualities[config.default_quality];
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 
 const spawnVLC = (video_id, quality)=>{
-	if (vlcProcess)	{
-		vlcProcess.kill('SIGKILL');
+	if (vlcProcess != null)	{
+		kill(vlcProcess.pid, 'SIGKILL');
+		vlcProcess = null
+		console.log("Tried to kill process");
 	}
 
 	const args = [
+		config.paths.yt_dlp,
+		"-f b -g",
+		"'https://www.youtube.com/watch?v=" + video_id + "'",
+		"|",
+		config.paths.cvlc,
 		"-vvv --preferred-resolution=" + config.preferred_resolution + " --network-caching=" + config.cache_milliseconds + " --sout-livehttp-caching",
-		"https://www.youtube.com/watch?v=" + video_id,
 		"--sout",
-		"'#transcode{" + selectedQuality.transcode + "}:standard{access=http{mime=" + selectedQuality.mime + "},dst=0.0.0.0:" + config.ports.vlc + selectedQuality.extra + "}'"
+		"'#transcode{" + selectedQuality.transcode + "}:standard{access=http{mime=" + selectedQuality.mime + "},dst=0.0.0.0:" + config.ports.vlc + selectedQuality.extra + "}' -"
 	];
 
-	console.log(args);
+	console.log(args.join(' '));
 
-	vlcProcess = spawn('vlc', args, {shell: true, detached: true});
+	vlcProcess = spawn('sh', ['-c', args.join(' ')]);
 
 	vlcProcess.stdout.on('data', (data) => {
 		console.log(`stdout: ${data}`);
@@ -38,7 +45,6 @@ const spawnVLC = (video_id, quality)=>{
 
 	vlcProcess.on('close', (code) => {
 		console.log(`NODE: child process exited with code ${code}`);
-		vlcProcess = null;
 	});
 }
 

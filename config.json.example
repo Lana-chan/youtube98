@@ -2,11 +2,15 @@
 	"api_key": "your youtube API key here",
 	"api_url": "https://www.googleapis.com/youtube/v3",
 	"server_url": "your local IP or URL here",
-	"preferred_resolution": 576,
-	"cache_milliseconds": 5000,
+	"preferred_resolution": 480,
+	"cache_milliseconds": 15000,
 	"ports": {
 		"app": 3000,
 		"vlc": 8080
+	},
+	"paths": {
+		"cvlc": "/usr/bin/cvlc",
+		"yt_dlp": "~/.local/bin/yt-dlp"
 	},
 	"results_per_page": 15,
 	"default_quality": 1,

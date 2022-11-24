@@ -17,6 +17,7 @@ A reasonably modern server with the following:
 
 * Node.js
 * VLC
+* yt-dlp
 * Some form of networking between host and your retro client
 
 To setup the server, run `npm install`, then modify the `config.json.example`
