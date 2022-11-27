@@ -123,7 +123,8 @@ app.get('/results', (req, res)=>{
 			part: 'snippet',
 			type: 'video',
 			maxResults: config.results_per_page,
-			key: config.api_key
+			key: config.api_key,
+			pageToken: req.query.page_token
 		},
 		(err, result)=>{
 			if (err) {

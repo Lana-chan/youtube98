@@ -40,6 +40,14 @@
 			<hr class="clear">
 		<% } %>
 
+		<% if (results.prevPageToken != null) { %>
+			<a href="/results?search_query=<%=searchQuery%>&page_token=<%=results.prevPageToken%>">Previous page</a>
+		<% } %>
+
+		<% if (results.nextPageToken != null) { %>
+			<a href="/results?search_query=<%=searchQuery%>&page_token=<%=results.nextPageToken%>">Next page</a>
+		<% } %>
+
 	<% } %>
 
 </body>
