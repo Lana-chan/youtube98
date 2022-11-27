@@ -6,7 +6,8 @@
 	"cache_milliseconds": 15000,
 	"ports": {
 		"app": 3000,
-		"vlc": 8080
+		"vlc": 8080,
+		"vlc_control": 12345
 	},
 	"paths": {
 		"cvlc": "/usr/bin/cvlc",

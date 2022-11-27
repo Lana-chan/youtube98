@@ -15,8 +15,14 @@
 	</div>
 
 	<div class="center">
-		<iframe src="<%=iframeUrl%>" width="854" height="480"></iframe>
-		<!--<video src="<%=iframeUrl%>" width="854" height="480"></video>-->
+		<iframe name="videoframe" src="<%=iframeUrl%>" width="854" height="480"></iframe><br>
+		
+		<iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+		<form class="inline" action="/control" target="dummyframe" method="POST">
+			<input type="submit" name="pause" value="|| Pause" />
+			<input type="submit" name="play" value="&gt; Play" />
+		</form>
+		<a href="<%=iframeUrl%>" target="videoframe">Refresh iFrame</a>
 	</div>
 
 	<h3><%-videoInfo.snippet.title%></h3>

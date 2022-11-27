@@ -1,10 +1,12 @@
 const config        = require('./config.json');
 const https         = require('https');
+const http          = require('http');
 const { spawn }     = require('child_process');
 const kill          = require('tree-kill');
 const url           = require('url');
 const express       = require('express');
-const { request } = require('http');
+const fs            = require('fs');
+const path          = require('path');
 const app = express();
 
 var vlcProcess = null;
@@ -13,38 +15,70 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./public'));
 
-const spawnVLC = (video_id, quality)=>{
-	if (vlcProcess != null)	{
-		kill(vlcProcess.pid, 'SIGKILL');
-		vlcProcess = null
-		console.log("Tried to kill process");
-	}
+const replaceHome = (path) => {
+	return path.replace('~', process.env.HOME);
+}
 
-	const args = [
-		config.paths.yt_dlp,
-		"-f b -g",
-		"'https://www.youtube.com/watch?v=" + video_id + "'",
-		"|",
-		config.paths.cvlc,
-		"-vvv --preferred-resolution=" + config.preferred_resolution + " --network-caching=" + config.cache_milliseconds + " --sout-livehttp-caching",
-		"--sout",
-		"'#transcode{" + selectedQuality.transcode + "}:standard{access=http{mime=" + selectedQuality.mime + "},dst=0.0.0.0:" + config.ports.vlc + selectedQuality.extra + "}' -"
-	];
+const spawnYTDLP = (video_id) => {
+	return new Promise(( resolve ,reject )=>{
+		const args = [
+			"-f",
+			"b",
+			"-g",
+			"https://www.youtube.com/watch?v=" + video_id
+		];
 
-	console.log(args.join(' '));
+		ytdlpProcess = spawn(replaceHome(config.paths.yt_dlp), args);
 
-	vlcProcess = spawn('sh', ['-c', args.join(' ')]);
-
-	vlcProcess.stdout.on('data', (data) => {
-		console.log(`stdout: ${data}`);
+		ytdlpProcess.stdout.on('data', (data) => {
+			console.log(`stdout: ${data}`);
+			spawnVLC(data.toString('utf8').trim()).then(() => {resolve();});
+		});
 	});
+}
 
-	vlcProcess.stderr.on('data', (data) => {
-		console.error(`stderr: ${data}`);
-	});
+const spawnVLC = (url)=>{
+	return new Promise(( resolve ,reject )=>{
+		if (vlcProcess != null)	{
+			vlcProcess.kill('SIGKILL');
+			vlcProcess = null
+			console.log("Tried to kill process");
+		}
 
-	vlcProcess.on('close', (code) => {
-		console.log(`NODE: child process exited with code ${code}`);
+		const args = [
+			"-vvv",
+			"--preferred-resolution=" + config.preferred_resolution,
+			"--network-caching=" + config.cache_milliseconds,
+			"--sout-livehttp-caching",
+			"--sout",
+			"#transcode{" + selectedQuality.transcode + "}:standard{access=http{mime=" + selectedQuality.mime + "},dst=0.0.0.0:" + config.ports.vlc + selectedQuality.extra + "}",
+			"-I",
+			"http",
+			"--http-host",
+			"127.0.0.1",
+			"--http-port",
+			config.ports.vlc_control,
+			"--start-paused",
+			url
+		];
+
+		console.log(args.join(' '));
+
+		vlcProcess = spawn(config.paths.cvlc, args);
+
+		vlcProcess.stdout.on('data', (data) => {
+			console.log(`stdout: ${data}`);
+		});
+
+		vlcProcess.stderr.on('data', (data) => {
+			console.error(`stderr: ${data}`);
+		});
+
+		vlcProcess.on('close', (code) => {
+			console.log(`NODE: child process exited with code ${code}`);
+		});
+
+		resolve();
 	});
 }
 
@@ -55,26 +89,37 @@ const showResults = (res, searchQuery, results)=>{
 const playVideo = (res, videoInfo, bypass)=>{
 	if (bypass == 1) {
 		iframeUrl = "https://youtube.com/embed/" + videoInfo.items[0].id
+		res.render('video.ejs', {videoInfo: videoInfo.items[0], iframeUrl: iframeUrl});
 	} else {
 		iframeUrl = "http://" + config.server_url + ":" + config.ports.vlc
-		spawnVLC(videoInfo.items[0].id, 0);
+		spawnYTDLP(videoInfo.items[0].id).then(() => {
+			res.render('video.ejs', {videoInfo: videoInfo.items[0], iframeUrl: iframeUrl});
+		});
 	}
-	res.render('video.ejs', {videoInfo: videoInfo.items[0], iframeUrl: iframeUrl});
 }
 
-const urlRequest = (url)=>{
+const urlRequest = (url, secure=true)=>{
+	let protocol = (secure ? https : http);
 	return new Promise(( resolve ,reject )=>{
-		https.get(url,
+		protocol.get(url,
 			(res) => {
 				let data = '';
 				res.on('data', (chunk) => {
 					data += chunk;
 				});
 				res.on('end', () => {
-					resolve(JSON.parse(data));
+					try {
+						resolve(JSON.parse(data));
+					} catch (e) {
+						resolve(true);
+					}
 				});
 			}).on('error', (err) => {
-				reject(JSON.parse(err));
+				try {
+					reject(JSON.parse(err));
+				} catch (e) {
+					reject();
+				}
 			});
 		});
 }
@@ -144,6 +189,16 @@ app.post('/search', (req, res)=>{
 			"search_query": req.body.searchQuery
 		}
 	}));
+});
+
+app.post('/control', (req, res)=>{
+	if ('play' in req.body) {
+		console.log("play")
+		urlRequest(`http://localhost:${config.ports.vlc_control}/requests/status.xml?command=pl_play`, false).then(() => {}).catch(() => {});
+	} else if ('pause' in req.body) {
+		urlRequest(`http://localhost:${config.ports.vlc_control}/requests/status.xml?command=pl_pause`, false).then(() => {}).catch(() => {});
+	}
+	res.sendStatus(200);
 });
 
 app.get('/', (req, res)=>{

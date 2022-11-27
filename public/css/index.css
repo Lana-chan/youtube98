@@ -15,3 +15,7 @@
 	float: left;
 	padding-right: 0.5em;
 }
+
+.inline {
+	display: inline;
+}
