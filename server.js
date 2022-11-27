@@ -142,7 +142,16 @@ const youtubeVideo = (opts, callback)=>{
 
 app.get('/quality', (req, res)=>{
 	selectedQuality = config.qualities[req.query.i];
-	res.redirect('/');
+	if (req.query.search_query) {
+		res.redirect(url.format({
+			pathname:"/results",
+			query: {
+				"search_query": req.query.search_query
+			}
+		}));
+	} else {
+		res.redirect('/');
+	}
 });
 
 app.get('/watch', (req, res)=>{
@@ -186,7 +195,7 @@ app.post('/search', (req, res)=>{
 	res.redirect(url.format({
 		pathname:"/results",
 		query: {
-			"search_query": req.body.searchQuery
+			"search_query": req.body.search_query
 		}
 	}));
 });

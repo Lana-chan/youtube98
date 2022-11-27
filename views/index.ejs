@@ -8,8 +8,8 @@
 	<div class="center">
 		<h1>Youtube98</h1>
 		<form action="/search" method="POST">
-			<label for="searchQuery">Youtube search: </label>
-			<input type="text" name="searchQuery" id="searchQuery" value="<%=searchQuery%>"></input>
+			<label for="search_query">Youtube search: </label>
+			<input type="text" name="search_query" id="search_query" value="<%=searchQuery%>"></input>
 			<input type="submit" value="Search"></input>
 		</form>
 		<p>Quality:
@@ -17,7 +17,11 @@
 				<% if (selectedQuality.id == qualities[i].id) { %>
 					<%-qualities[i].pretty_name%>
 				<% } else { %>
-					<a href="/quality?i=<%=i%>"><%-qualities[i].pretty_name%></a>
+					<% if (searchQuery != null) { %>
+						<a href="/quality?i=<%=i%>&search_query=<%=searchQuery%>"><%-qualities[i].pretty_name%></a>
+					<% } else { %>
+						<a href="/quality?i=<%=i%>"><%-qualities[i].pretty_name%></a>
+					<% } %>
 				<% } %>
 			<% } %>
 		</p>
